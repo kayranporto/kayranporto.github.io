@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delivery Pro</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f1f3f6;
+}
+
+header {
+    background: linear-gradient(90deg, #e63946, #d62828);
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 22px;
+}
+
+header button {
+    background: white;
+    color: #d62828;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+.preco {
+    color: #2a9d8f;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+button.add {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #e63946;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button.add:hover {
+    background: #c1121f;
+}
+
+.carrinho, .admin {
+    background: white;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button.primary {
+    background: #2a9d8f;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    margin-top: 40px;
+    padding: 15px;
+    text-align: center;
+    background: #1d3557;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🍔 Delivery Pro</h1>
+<button onclick="toggleAdmin()">Painel Admin</button>
+</header>
+
+<div class="container">
+
+<!-- LOJA -->
+<div id="loja">
+<h2>Cardápio</h2>
+<div class="produtos" id="listaProdutos"></div>
+
+<div class="carrinho">
+<h2>🛒 Carrinho</h2>
+<ul id="listaCarrinho"></ul>
+<p><strong>Total: R$ <span id="total">0.00</span></strong></p>
+<button class="primary">Finalizar Pedido</button>
+</div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="admin hidden">
+<h2>Painel Administrativo</h2>
+
+<label>Nome do Produto</label>
+<input type="text" id="nomeProduto">
+
+<label>Preço</label>
+<input type="number" id="precoProduto">
+
+<button class="primary" onclick="adicionarProduto()">Adicionar Produto</button>
+
+<h3 style="margin-top:20px;">Produtos Cadastrados</h3>
+<ul id="listaAdminProdutos"></ul>
+
+<button style="margin-top:20px;" onclick="toggleAdmin()">Voltar para Loja</button>
+</div>
+
+</div>
+
+<footer>
+© 2026 - Sistema Profissional de Delivery
+</footer>
+
+<script>
+let produtos = [
+    { nome: "Hamburguer Artesanal", preco: 25 },
+    { nome: "Pizza Calabresa", preco: 45 },
+    { nome: "Refrigerante 2L", preco: 12 }
+];
+
+let carrinho = [];
+
+function renderProdutos() {
+    const lista = document.getElementById("listaProdutos");
+    lista.innerHTML = "";
+    produtos.forEach((produto, index) => {
+        lista.innerHTML += `
+            <div class="card">
+                <h3>${produto.nome}</h3>
+                <div class="preco">R$ ${produto.preco.toFixed(2)}</div>
+                <button class="add" onclick="adicionarCarrinho(${index})">Adicionar</button>
+            </div>
+        `;
+    });
+    renderAdminProdutos();
+}
+
+function adicionarCarrinho(index) {
+    carrinho.push(produtos[index]);
+    renderCarrinho();
+}
+
+function renderCarrinho() {
+    const lista = document.getElementById("listaCarrinho");
+    lista.innerHTML = "";
+    let total = 0;
+    carrinho.forEach(item => {
+        lista.innerHTML += `<li>${item.nome} - R$ ${item.preco.toFixed(2)}</li>`;
+        total += item.preco;
+    });
+    document.getElementById("total").innerText = total.toFixed(2);
+}
+
+function adicionarProduto() {
+    const nome = document.getElementById("nomeProduto").value;
+    const preco = parseFloat(document.getElementById("precoProduto").value);
+    if(nome && preco) {
+        produtos.push({ nome, preco });
+        renderProdutos();
+        document.getElementById("nomeProduto").value = "";
+        document.getElementById("precoProduto").value = "";
+    }
+}
+
+function renderAdminProdutos() {
+    const lista = document.getElementById("listaAdminProdutos");
+    lista.innerHTML = "";
+    produtos.forEach(produto => {
+        lista.innerHTML += `<li>${produto.nome} - R$ ${produto.preco.toFixed(2)}</li>`;
+    });
+}
+
+function toggleAdmin() {
+    document.getElementById("loja").classList.toggle("hidden");
+    document.getElementById("admin").classList.toggle("hidden");
+}
+
+renderProdutos();
+</script>
+
+</body>
+</html>
