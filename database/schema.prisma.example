@@ -1,0 +1,78 @@
+// Documentação: Este arquivo contém exemplos de como usar Prisma/Neon
+// Para usar em produção, instale: npm install @prisma/client
+
+// import { PrismaClient } from '@prisma/client'
+
+// const prisma = new PrismaClient()
+
+// export default prisma
+
+// Exemplo de schema.prisma para Neon:
+/*
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  plan      String   @default("free")
+  ownerId   String
+  users     User[]
+  products  Product[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  password       String
+  role           String   @default("user")
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  price          Float
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  orderItems     OrderItem[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  total          Float
+  status         String   @default("pending")
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  items          OrderItem[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+*/
