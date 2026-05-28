@@ -1,108 +1,259 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Império Delivery — hambúrgueres, pizzas, combos e bebidas com entrega rápida. Peça pelo site e finalize no WhatsApp.">
+    <meta name="theme-color" content="#E53935">
+    <link rel="icon" href="logo.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="logo.png">
     <title>Império Delivery | O Melhor da sua Cidade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-<base target="_blank">
 </head>
 <body>
+    <a href="#cardapio" class="skip-link">Ir para o cardápio</a>
 
     <header>
         <div class="header-top">
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="logo">
-                <img src="https://kayranporto.github.io/logo.png" alt="Império Delivery" onerror="this.src='https://via.placeholder.com/60?text=ID'">
+                <img src="logo.png" alt="Império Delivery" width="60" height="60">
                 <div class="logo-text">
                     <h1>Império Delivery</h1>
                     <p>O sabor que conquista você!</p>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="header-btn">
-                    <i class="fas fa-phone"></i>
-                    <span>(11) 99999-9999</span>
+                <button type="button" class="header-btn" id="loginBtn" aria-label="Entrar na conta">
+                    <i class="fas fa-user"></i>
+                    <span class="hide-mobile">Entrar</span>
                 </button>
-                <button class="header-btn cart-btn" onclick="toggleCart()">
+                <div class="user-menu" id="userMenu" hidden>
+                    <button type="button" class="header-btn user-menu-btn" id="userMenuBtn" aria-expanded="false" aria-haspopup="true">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="hide-mobile" id="userMenuName">Conta</span>
+                        <i class="fas fa-chevron-down user-menu-arrow hide-mobile" aria-hidden="true"></i>
+                    </button>
+                    <div class="user-menu-dropdown" id="userMenuDropdown">
+                        <a href="#conta"><i class="fas fa-id-card"></i> Minha conta</a>
+                        <a href="#cardapio"><i class="fas fa-utensils"></i> Fazer pedido</a>
+                        <button type="button" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+                    </div>
+                </div>
+                <a class="header-btn" href="tel:+5511999999999" aria-label="Ligar para o restaurante">
+                    <i class="fas fa-phone"></i>
+                    <span class="hide-mobile">(11) 99999-9999</span>
+                </a>
+                <button class="header-btn cart-btn" onclick="toggleCart()" aria-label="Abrir carrinho">
                     <i class="fas fa-shopping-bag"></i>
-                    <span>Meu Carrinho</span>
+                    <span class="hide-mobile">Meu Carrinho</span>
                     <span class="cart-count" id="cartCount">0</span>
                 </button>
             </div>
         </div>
-        <nav>
+        <nav id="mainNav" aria-label="Menu principal">
             <ul>
-                <li><a href="#" class="active">Início</a></li>
-                <li><a href="#cardapio">Cardápio</a></li>
-                <li><a href="#promocoes">Promoções</a></li>
-                <li><a href="#sobre">Sobre Nós</a></li>
-                <li><a href="#contato">Contato</a></li>
+                <li><a href="#inicio" class="active" data-nav="inicio">Início</a></li>
+                <li><a href="#cardapio" data-nav="cardapio">Cardápio</a></li>
+                <li><a href="#promocoes" data-nav="promocoes">Promoções</a></li>
+                <li><a href="#sobre" data-nav="sobre">Sobre Nós</a></li>
+                <li><a href="#conta" data-nav="conta" id="navConta" class="nav-conta-hidden">Minha conta</a></li>
+                <li><a href="#contato" data-nav="contato">Contato</a></li>
             </ul>
         </nav>
     </header>
 
-    <section class="hero">
-        <h2>🍔 Delivery Rápido e Saboroso</h2>
-        <p>Peça agora e receba em minutos! Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
+    <section class="hero" id="inicio">
+        <div class="store-status" id="storeStatus" aria-live="polite"></div>
+        <h2>Delivery rápido e saboroso</h2>
+        <p>Peça agora e receba em minutos. Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
+        <a href="#cardapio" class="hero-cta">
+            <i class="fas fa-utensils"></i> Ver cardápio
+        </a>
         <div class="hero-features">
             <div class="hero-feature">
                 <i class="fas fa-motorcycle"></i>
-                <span>Entrega Rápida</span>
+                <span>Entrega em até 45 min</span>
             </div>
             <div class="hero-feature">
                 <i class="fas fa-star"></i>
-                <span>Qualidade Premium</span>
+                <span>Qualidade premium</span>
             </div>
             <div class="hero-feature">
                 <i class="fas fa-tags"></i>
-                <span>Melhor Preço</span>
+                <span>Combos com desconto</span>
             </div>
+        </div>
+        <p class="hero-delivery-info">
+            <i class="fas fa-info-circle"></i>
+            Pedido mínimo R$ 25,00 · Taxa de entrega a partir de R$ 5,00
+        </p>
+    </section>
+
+    <section class="promotions" id="promocoes">
+        <div class="container-inner">
+            <div class="section-title">
+                <h2><i class="fas fa-fire"></i> Promoções da semana</h2>
+            </div>
+            <div class="promo-grid" id="promoGrid"></div>
         </div>
     </section>
 
     <div class="container" id="cardapio">
-        <div class="categories">
-            <button class="category-btn active" onclick="filterCategory('todos', this)">
+        <div class="section-title">
+            <h2><i class="fas fa-utensils"></i> Nosso cardápio</h2>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input type="search" id="productSearch" placeholder="Buscar por nome ou descrição..." autocomplete="off" aria-label="Buscar produtos">
+            <button type="button" class="search-clear" id="searchClear" aria-label="Limpar busca" hidden>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="categories" role="tablist" aria-label="Categorias">
+            <button class="category-btn active" role="tab" aria-selected="true" onclick="filterCategory('todos', this)">
                 <i class="fas fa-th-large"></i>
                 <span>Todos</span>
             </button>
-            <button class="category-btn" onclick="filterCategory('hamburguer', this)">
+            <button class="category-btn" role="tab" aria-selected="false" onclick="filterCategory('hamburguer', this)">
                 <i class="fas fa-hamburger"></i>
                 <span>Hambúrgueres</span>
             </button>
-            <button class="category-btn" onclick="filterCategory('pizza', this)">
+            <button class="category-btn" role="tab" aria-selected="false" onclick="filterCategory('pizza', this)">
                 <i class="fas fa-pizza-slice"></i>
                 <span>Pizzas</span>
             </button>
-            <button class="category-btn" onclick="filterCategory('bebida', this)">
+            <button class="category-btn" role="tab" aria-selected="false" onclick="filterCategory('bebida', this)">
                 <i class="fas fa-glass-whiskey"></i>
                 <span>Bebidas</span>
             </button>
-            <button class="category-btn" onclick="filterCategory('sobremesa', this)">
+            <button class="category-btn" role="tab" aria-selected="false" onclick="filterCategory('sobremesa', this)">
                 <i class="fas fa-ice-cream"></i>
                 <span>Sobremesas</span>
             </button>
-            <button class="category-btn" onclick="filterCategory('combo', this)">
+            <button class="category-btn" role="tab" aria-selected="false" onclick="filterCategory('combo', this)">
                 <i class="fas fa-box-open"></i>
                 <span>Combos</span>
             </button>
         </div>
 
-        <div class="section-title">
-            <h2><i class="fas fa-utensils"></i> Nosso Cardápio</h2>
-        </div>
-
         <div class="products-grid" id="productsGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+            <i class="fas fa-search"></i>
+            <h3>Nenhum produto encontrado</h3>
+            <p>Tente outro termo ou categoria.</p>
+        </div>
     </div>
 
-    <div class="cart-sidebar" id="cartSidebar">
+    <section class="account" id="conta">
+        <div class="container-inner">
+            <div class="section-title">
+                <h2><i class="fas fa-user-circle"></i> Minha conta</h2>
+            </div>
+
+            <div class="account-guest" id="accountGuest">
+                <div class="account-guest-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Entre ou crie sua conta</h3>
+                    <p>Salve seus dados, acompanhe pedidos e finalize mais rápido no checkout.</p>
+                    <div class="account-guest-actions">
+                        <button type="button" class="btn-primary" id="accountLoginBtn">Entrar</button>
+                        <button type="button" class="btn-secondary" id="accountRegisterBtn">Criar conta</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-logged" id="accountLogged" hidden>
+                <div class="account-welcome">
+                    <p>Olá, <strong id="accountName">Cliente</strong>!</p>
+                    <span class="account-email" id="accountEmail"></span>
+                </div>
+
+                <div class="account-grid">
+                    <div class="account-card">
+                        <h3><i class="fas fa-user-edit"></i> Meus dados</h3>
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-group">
+                                <label for="profileName">Nome</label>
+                                <input type="text" id="profileName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profilePhone">Telefone</label>
+                                <input type="tel" id="profilePhone" maxlength="15">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileCep">CEP</label>
+                                    <input type="text" id="profileCep" maxlength="9">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileAddress">Endereço padrão</label>
+                                <textarea id="profileAddress" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">Salvar dados</button>
+                            <p class="profile-saved-msg" id="profileSavedMsg"><i class="fas fa-check"></i> Dados salvos!</p>
+                        </form>
+                    </div>
+
+                    <div class="account-card">
+                        <h3><i class="fas fa-receipt"></i> Meus pedidos</h3>
+                        <div class="orders-empty" id="ordersEmpty">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>Você ainda não fez pedidos pelo site.</p>
+                            <a href="#cardapio" class="hero-cta account-cta">Ver cardápio</a>
+                        </div>
+                        <div class="orders-list" id="ordersList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="sobre">
+        <div class="container-inner">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2><i class="fas fa-heart"></i> Sobre o Império Delivery</h2>
+                    <p>Nascemos da paixão por comida de qualidade e atendimento que trata cada pedido como especial. Há mais de 5 anos levamos os melhores sabores até a sua porta.</p>
+                    <p>Ingredientes frescos, receitas artesanais e uma equipe dedicada para você pedir com confiança — do site direto para o nosso WhatsApp.</p>
+                    <ul class="about-highlights">
+                        <li><i class="fas fa-check-circle"></i> Produção diária</li>
+                        <li><i class="fas fa-check-circle"></i> Embalagem segura para entrega</li>
+                        <li><i class="fas fa-check-circle"></i> Pagamento na entrega ou PIX</li>
+                    </ul>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <strong>5+</strong>
+                        <span>Anos de experiência</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>12+</strong>
+                        <span>Itens no cardápio</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong>4.9</strong>
+                        <span>Avaliação dos clientes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cart-sidebar" id="cartSidebar" role="dialog" aria-label="Carrinho de compras">
         <div class="cart-header">
-            <h3><i class="fas fa-shopping-bag"></i> Meu Carrinho</h3>
-            <button class="close-cart" onclick="toggleCart()">
+            <h3><i class="fas fa-shopping-bag"></i> Meu carrinho</h3>
+            <button class="close-cart" onclick="toggleCart()" aria-label="Fechar carrinho">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -114,70 +265,187 @@
             </div>
         </div>
         <div class="cart-footer">
+            <div class="cart-subtotal" id="cartSubtotalRow" hidden>
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">R$ 0,00</span>
+            </div>
+            <div class="cart-delivery-fee">
+                <span>Taxa de entrega:</span>
+                <span id="deliveryFee">R$ 5,00</span>
+            </div>
             <div class="cart-total">
                 <span>Total:</span>
                 <span id="cartTotal">R$ 0,00</span>
             </div>
-            <button class="checkout-btn" onclick="openCheckout()">
+            <p class="cart-minimum" id="cartMinimum"></p>
+            <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()">
                 <i class="fab fa-whatsapp"></i>
-                Finalizar Pedido
+                Finalizar pedido
             </button>
         </div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
-    <div class="modal" id="checkoutModal">
+    <div class="modal" id="checkoutModal" role="dialog" aria-labelledby="checkoutTitle" aria-modal="true">
+        <div class="modal-header">
+            <h3 id="checkoutTitle"><i class="fab fa-whatsapp"></i> Finalizar pedido</h3>
+            <p>Preencha seus dados para enviar pelo WhatsApp</p>
+        </div>
         <div class="modal-body">
             <div class="form-group">
-                <label><i class="fas fa-user"></i> Nome Completo</label>
-                <input type="text" id="customerName" placeholder="Digite seu nome">
+                <label for="customerName"><i class="fas fa-user"></i> Nome completo *</label>
+                <input type="text" id="customerName" placeholder="Digite seu nome" required>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Telefone</label>
-                    <input type="tel" id="customerPhone" placeholder="(00) 00000-0000">
+                    <label for="customerPhone"><i class="fas fa-phone"></i> Telefone *</label>
+                    <input type="tel" id="customerPhone" placeholder="(00) 00000-0000" maxlength="15" required>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-map-marker-alt"></i> CEP</label>
-                    <input type="text" id="customerCep" placeholder="00000-000">
+                    <label for="customerCep"><i class="fas fa-map-marker-alt"></i> CEP</label>
+                    <input type="text" id="customerCep" placeholder="00000-000" maxlength="9">
                 </div>
             </div>
             <div class="form-group">
-                <label><i class="fas fa-home"></i> Endereço Completo</label>
-                <textarea id="customerAddress" rows="2" placeholder="Rua, número, bairro, complemento..."></textarea>
+                <label for="customerAddress"><i class="fas fa-home"></i> Endereço completo *</label>
+                <textarea id="customerAddress" rows="2" placeholder="Rua, número, bairro, complemento..." required></textarea>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-credit-card"></i> Forma de Pagamento</label>
-                <div class="payment-methods">
-                    <div class="payment-method" onclick="selectPayment(this, 'Dinheiro')">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <span>Dinheiro</span>
+            <fieldset class="form-group payment-fieldset" id="paymentFieldset">
+                <legend><i class="fas fa-wallet"></i> Forma de pagamento *</legend>
+                <div class="payment-methods" id="paymentMethods" role="radiogroup" aria-label="Escolha como pagar">
+                    <button type="button" class="payment-method" data-method="dinheiro" aria-pressed="false">
+                        <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+                        <span class="payment-method-title">Dinheiro</span>
+                        <span class="payment-method-desc">Na entrega</span>
+                    </button>
+                    <button type="button" class="payment-method" data-method="cartao" aria-pressed="false">
+                        <i class="fas fa-credit-card" aria-hidden="true"></i>
+                        <span class="payment-method-title">Cartão</span>
+                        <span class="payment-method-desc">Débito ou crédito</span>
+                    </button>
+                    <button type="button" class="payment-method" data-method="pix" aria-pressed="false">
+                        <i class="fas fa-qrcode" aria-hidden="true"></i>
+                        <span class="payment-method-title">PIX</span>
+                        <span class="payment-method-desc">Chave ou QR na entrega</span>
+                    </button>
+                </div>
+
+                <div class="payment-details" id="paymentDetailsCash" hidden>
+                    <p class="payment-details-label">Precisa de troco?</p>
+                    <div class="payment-chips" role="group" aria-label="Troco">
+                        <button type="button" class="payment-chip" data-needs-change="nao">Não</button>
+                        <button type="button" class="payment-chip" data-needs-change="sim">Sim</button>
                     </div>
-                    <div class="payment-method" onclick="selectPayment(this, 'Cartão')">
-                        <i class="fas fa-credit-card"></i>
-                        <span>Cartão</span>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment(this, 'PIX')">
-                        <i class="fas fa-qrcode"></i>
-                        <span>PIX</span>
+                    <div class="payment-extra" id="changeAmountGroup" hidden>
+                        <label for="changeFor"><i class="fas fa-coins"></i> Troco para quanto? *</label>
+                        <input type="text" id="changeFor" inputmode="decimal" placeholder="Ex: R$ 100,00" autocomplete="off">
+                        <p class="payment-total-hint">Total do pedido: <strong id="paymentOrderTotal">R$ 0,00</strong></p>
                     </div>
                 </div>
-            </div>
+
+                <div class="payment-details" id="paymentDetailsCard" hidden>
+                    <p class="payment-details-label">Tipo do cartão *</p>
+                    <div class="payment-chips" role="group" aria-label="Tipo do cartão">
+                        <button type="button" class="payment-chip" data-card="debito">
+                            <i class="fas fa-credit-card" aria-hidden="true"></i> Débito
+                        </button>
+                        <button type="button" class="payment-chip" data-card="credito">
+                            <i class="fas fa-credit-card" aria-hidden="true"></i> Crédito
+                        </button>
+                    </div>
+                    <p class="payment-note"><i class="fas fa-truck" aria-hidden="true"></i> Pagamento na entrega com maquininha</p>
+                </div>
+
+                <div class="payment-details" id="paymentDetailsPix" hidden>
+                    <div class="pix-box">
+                        <div class="pix-info">
+                            <span class="pix-label">Chave PIX</span>
+                            <code id="pixKeyDisplay">—</code>
+                            <span class="pix-holder" id="pixHolderDisplay"></span>
+                        </div>
+                        <button type="button" class="pix-copy-btn" id="copyPixBtn">
+                            <i class="fas fa-copy" aria-hidden="true"></i> Copiar
+                        </button>
+                    </div>
+                    <p class="payment-note"><i class="fab fa-whatsapp" aria-hidden="true"></i> Envie o comprovante no WhatsApp após confirmar o pedido</p>
+                </div>
+            </fieldset>
             <div class="form-group">
-                <label><i class="fas fa-comment"></i> Observações (opcional)</label>
-                <textarea id="orderNotes" rows="2" placeholder="Alguma observação especial?"></textarea>
+                <label for="orderNotes"><i class="fas fa-comment"></i> Observações (opcional)</label>
+                <textarea id="orderNotes" rows="2" placeholder="Sem cebola, ponto da carne, etc."></textarea>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeCheckout()">Voltar</button>
-            <button class="btn-primary" onclick="sendOrder()">
-                <i class="fab fa-whatsapp"></i> Enviar Pedido
+            <button type="button" class="btn-secondary" onclick="closeCheckout()">Voltar</button>
+            <button type="button" class="btn-primary" onclick="sendOrder()">
+                <i class="fab fa-whatsapp"></i> Enviar pedido
             </button>
         </div>
     </div>
 
-    <div class="success-message" id="successMessage">
+    <div class="modal login-modal" id="loginModal" role="dialog" aria-labelledby="loginModalTitle" aria-modal="true">
+        <div class="modal-header login-modal-header">
+            <h3 id="loginModalTitle"><i class="fas fa-user"></i> Acessar conta</h3>
+            <button type="button" class="close-modal-btn" id="closeLoginModal" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="auth-tabs" role="tablist">
+            <button type="button" class="auth-tab active" data-tab="login" role="tab" aria-selected="true">Entrar</button>
+            <button type="button" class="auth-tab" data-tab="register" role="tab" aria-selected="false">Criar conta</button>
+        </div>
+        <div class="modal-body auth-modal-body">
+            <p class="auth-error" id="authError" role="alert"></p>
+
+            <div id="loginPanel">
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <input type="password" id="loginPassword" placeholder="Sua senha" autocomplete="current-password" required minlength="6">
+                    </div>
+                    <label class="auth-remember">
+                        <input type="checkbox" id="loginRemember">
+                        Manter conectado
+                    </label>
+                    <button type="submit" class="btn-primary btn-block">Entrar</button>
+                </form>
+            </div>
+
+            <div id="registerPanel" hidden>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="registerName">Nome completo</label>
+                        <input type="text" id="registerName" placeholder="Seu nome" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">E-mail</label>
+                        <input type="email" id="registerEmail" placeholder="seu@email.com" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone">Telefone</label>
+                        <input type="tel" id="registerPhone" placeholder="(00) 00000-0000" maxlength="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Senha</label>
+                        <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPasswordConfirm">Confirmar senha</label>
+                        <input type="password" id="registerPasswordConfirm" placeholder="Repita a senha" autocomplete="new-password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Criar conta</button>
+                </form>
+            </div>
+        </div>
+        <p class="auth-disclaimer">Seus dados ficam salvos neste navegador. Para segurança em escala, use um sistema com servidor.</p>
+    </div>
+
+    <div class="success-message" id="successMessage" role="status" aria-live="polite">
         <i class="fas fa-check-circle"></i>
         <div>
             <h4>Item adicionado!</h4>
@@ -185,36 +453,49 @@
         </div>
     </div>
 
+    <a href="https://wa.me/5511999999999" class="whatsapp-float" id="whatsappFloat" target="_blank" rel="noopener noreferrer" aria-label="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div class="mobile-cart-bar" id="mobileCartBar">
+        <button type="button" onclick="toggleCart()">
+            <span class="mobile-cart-count" id="mobileCartCount">0</span>
+            <span>Ver carrinho</span>
+            <strong id="mobileCartTotal">R$ 0,00</strong>
+        </button>
+    </div>
+
     <footer id="contato">
         <div class="footer-content">
             <div class="footer-section">
-                <h4><i class="fas fa-info-circle"></i> Sobre Nós</h4>
+                <h4><i class="fas fa-info-circle"></i> Sobre nós</h4>
                 <p>O Império Delivery nasceu da paixão por comida de qualidade e atendimento excepcional. Há mais de 5 anos servindo os melhores sabores da cidade!</p>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" id="footerWhatsapp" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
             <div class="footer-section">
-                <h4><i class="fas fa-clock"></i> Horário de Funcionamento</h4>
-                <p><i class="fas fa-calendar-day"></i> Segunda a Quinta: 18h - 23h</p>
-                <p><i class="fas fa-calendar-day"></i> Sexta e Sábado: 18h - 00h</p>
-                <p><i class="fas fa-calendar-day"></i> Domingo: 18h - 22h</p>
+                <h4><i class="fas fa-clock"></i> Horário de funcionamento</h4>
+                <p><i class="fas fa-calendar-day"></i> Segunda a quinta: 18h – 23h</p>
+                <p><i class="fas fa-calendar-day"></i> Sexta e sábado: 18h – 00h</p>
+                <p><i class="fas fa-calendar-day"></i> Domingo: 18h – 22h</p>
             </div>
             <div class="footer-section">
                 <h4><i class="fas fa-map-marker-alt"></i> Endereço</h4>
                 <p><i class="fas fa-road"></i> Rua Exemplo, 123</p>
-                <p><i class="fas fa-city"></i> Centro - São Paulo/SP</p>
-                <p><i class="fas fa-phone"></i> (11) 99999-9999</p>
+                <p><i class="fas fa-city"></i> Centro – São Paulo/SP</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+5511999999999">(11) 99999-9999</a></p>
                 <p><i class="fas fa-envelope"></i> contato@imperiodelivery.com</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Império Delivery - Todos os direitos reservados | Desenvolvido com <i class="fas fa-heart" style="color: var(--primary);"></i></p>
+            <p>&copy; 2026 Império Delivery – Todos os direitos reservados</p>
         </div>
     </footer>
 
+    <script src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
