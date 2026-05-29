@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Império Delivery — hambúrgueres, pizzas, combos e bebidas com entrega rápida. Peça pelo site e finalize no WhatsApp.">
-    <meta name="theme-color" content="#E53935">
+    <meta name="theme-color" content="#DC2626">
     <link rel="icon" href="logo.png" type="image/png" sizes="32x32">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="logo.png">
     <title>Império Delivery | O Melhor da sua Cidade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <a href="#cardapio" class="skip-link">Ir para o cardápio</a>
 
-    <header>
+    <header id="siteHeader">
         <div class="header-top">
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
                 <i class="fas fa-bars"></i>
@@ -71,36 +71,57 @@
     </header>
 
     <section class="hero" id="inicio">
-        <div class="store-status" id="storeStatus" aria-live="polite"></div>
-        <h2>Delivery rápido e saboroso</h2>
-        <p>Peça agora e receba em minutos. Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
-        <a href="#cardapio" class="hero-cta">
-            <i class="fas fa-utensils"></i> Ver cardápio
-        </a>
-        <div class="hero-features">
-            <div class="hero-feature">
-                <i class="fas fa-motorcycle"></i>
-                <span>Entrega em até 45 min</span>
-            </div>
-            <div class="hero-feature">
-                <i class="fas fa-star"></i>
-                <span>Qualidade premium</span>
-            </div>
-            <div class="hero-feature">
-                <i class="fas fa-tags"></i>
-                <span>Combos com desconto</span>
-            </div>
+        <div class="hero-bg" aria-hidden="true">
+            <span class="hero-blob hero-blob-1"></span>
+            <span class="hero-blob hero-blob-2"></span>
+            <span class="hero-blob hero-blob-3"></span>
         </div>
-        <p class="hero-delivery-info">
-            <i class="fas fa-info-circle"></i>
-            Pedido mínimo R$ 25,00 · Taxa de entrega a partir de R$ 5,00
-        </p>
+        <div class="hero-inner">
+            <div class="store-status" id="storeStatus" aria-live="polite"></div>
+            <p class="hero-eyebrow">Império Delivery</p>
+            <h2>Delivery rápido e <span class="hero-highlight">saboroso</span></h2>
+            <p class="hero-lead">Peça agora e receba em minutos. Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
+            <div class="hero-actions">
+                <a href="#cardapio" class="hero-cta hero-cta-primary">
+                    <i class="fas fa-utensils"></i> Ver cardápio
+                </a>
+                <a href="https://wa.me/5511999999999" class="hero-cta hero-cta-secondary" id="heroWhatsapp" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-whatsapp"></i> Pedir no WhatsApp
+                </a>
+            </div>
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <span class="hero-feature-icon"><i class="fas fa-motorcycle"></i></span>
+                    <span>Entrega em até 45 min</span>
+                </div>
+                <div class="hero-feature">
+                    <span class="hero-feature-icon"><i class="fas fa-star"></i></span>
+                    <span>Qualidade premium</span>
+                </div>
+                <div class="hero-feature">
+                    <span class="hero-feature-icon"><i class="fas fa-tags"></i></span>
+                    <span>Combos com desconto</span>
+                </div>
+            </div>
+            <p class="hero-delivery-info">
+                <i class="fas fa-info-circle"></i>
+                Pedido mínimo R$ 25,00 · Taxa de entrega a partir de R$ 5,00
+            </p>
+        </div>
+        <div class="hero-wave" aria-hidden="true">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,48 C320,96 480,0 720,32 C960,64 1120,16 1440,48 L1440,80 L0,80 Z" fill="var(--bg)"/>
+            </svg>
+        </div>
     </section>
 
     <section class="promotions" id="promocoes">
         <div class="container-inner">
-            <div class="section-title">
-                <h2><i class="fas fa-fire"></i> Promoções da semana</h2>
+            <div class="section-title section-title-center">
+                <div>
+                    <span class="section-label">Ofertas</span>
+                    <h2><i class="fas fa-fire"></i> Promoções da semana</h2>
+                </div>
             </div>
             <div class="promo-grid" id="promoGrid"></div>
         </div>
@@ -108,7 +129,10 @@
 
     <div class="container" id="cardapio">
         <div class="section-title">
-            <h2><i class="fas fa-utensils"></i> Nosso cardápio</h2>
+            <div>
+                <span class="section-label">Peça agora</span>
+                <h2><i class="fas fa-utensils"></i> Nosso cardápio</h2>
+            </div>
         </div>
 
         <div class="search-bar">

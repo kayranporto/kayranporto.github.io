@@ -213,6 +213,7 @@ function renderProducts() {
                     </div>
                     <button type="button" class="add-btn" onclick="addToCart(${product.id})" aria-label="Adicionar ${product.name} ao carrinho">
                         <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span class="add-btn-text">Adicionar</span>
                     </button>
                 </div>
             </div>
@@ -826,22 +827,31 @@ function initSearch() {
     });
 }
 
+function initHeaderScroll() {
+    const header = document.getElementById('siteHeader');
+    if (!header) return;
+
+    const onScroll = () => {
+        header.classList.toggle('scrolled', window.scrollY > 24);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+}
+
 function initWhatsAppLinks() {
     const msg = `Olá! Gostaria de fazer um pedido no ${CONFIG.storeName}.`;
     const url = getWhatsAppUrl(msg);
 
     const float = document.getElementById('whatsappFloat');
     const footer = document.getElementById('footerWhatsapp');
-    if (float) {
-        float.href = url;
-        float.target = '_blank';
-        float.rel = 'noopener noreferrer';
-    }
-    if (footer) {
-        footer.href = url;
-        footer.target = '_blank';
-        footer.rel = 'noopener noreferrer';
-    }
+    const hero = document.getElementById('heroWhatsapp');
+    [float, footer, hero].forEach(el => {
+        if (!el) return;
+        el.href = url;
+        el.target = '_blank';
+        el.rel = 'noopener noreferrer';
+    });
 
     document.querySelectorAll('a[href^="tel:"]').forEach(link => {
         link.href = `tel:+${CONFIG.whatsapp}`;
@@ -873,6 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCart();
     initMobileMenu();
     initNavHighlight();
+    initHeaderScroll();
     initSearch();
     initWhatsAppLinks();
     initPayment();
