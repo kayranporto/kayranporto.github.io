@@ -429,6 +429,13 @@ function closeCheckout() {
 function updatePaymentOrderTotal() {
     const el = document.getElementById('paymentOrderTotal');
     if (el) el.textContent = formatMoney(getCartTotal());
+    
+    // Atualizar resumo de pagamento
+    const subtotal = getCartSubtotal();
+    const total = getCartTotal();
+    document.getElementById('summarySubtotal').textContent = formatMoney(subtotal);
+    document.getElementById('summaryDelivery').textContent = formatMoney(cart.length ? CONFIG.deliveryFee : 0);
+    document.getElementById('summaryTotal').textContent = formatMoney(total);
 }
 
 function hideAllPaymentDetails() {
@@ -897,3 +904,190 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') closeAll();
     });
 });
+
+// ——— Sistema de Status de Pedidos ———
+const OrderStatus = {
+    ORDERS_KEY: 'imperio_orders',
+    STATUS_STAGES: ['recebido', 'preparando', 'saiu_entrega', 'entregue', 'cancelado'],
+    
+    getOrders() {
+        try {
+            const raw = localStorage.getItem(this.ORDERS_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch {
+            return [];
+        }
+    },
+
+    saveOrders(orders) {
+        try {
+            localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+        } catch (_) { /* quota */ }
+    },
+
+    getUserOrders(userId) {
+        return this.getOrders().filter(o => o.userId === userId);
+    },
+
+    createOrder(userId, orderData) {
+        const orders = this.getOrders();
+        const order = {
+            id: Date.now().toString(),
+            userId,
+            items: orderData.items,
+            total: orderData.total,
+            payment: orderData.payment,
+            phone: orderData.phone,
+            address: orderData.address,
+            cep: orderData.cep,
+            status: 'recebido',
+            createdAt: new Date().toISOString(),
+            estimatedTime: 45 // minutos
+        };
+        orders.push(order);
+        this.saveOrders(orders);
+        return order;
+    },
+
+    updateOrderStatus(orderId, newStatus) {
+        const orders = this.getOrders();
+        const order = orders.find(o => o.id === orderId);
+        if (order && this.STATUS_STAGES.includes(newStatus)) {
+            order.status = newStatus;
+            this.saveOrders(orders);
+        }
+        return order;
+    },
+
+    getStatusLabel(status) {
+        const labels = {
+            recebido: { label: 'Pedido Recebido', icon: 'fa-check-circle', color: 'success' },
+            preparando: { label: 'Preparando...', icon: 'fa-fire', color: 'warning' },
+            saiu_entrega: { label: 'Saiu para Entrega', icon: 'fa-motorcycle', color: 'info' },
+            entregue: { label: 'Entregue', icon: 'fa-check-double', color: 'success' },
+            cancelado: { label: 'Cancelado', icon: 'fa-times-circle', color: 'error' }
+        };
+        return labels[status] || { label: status, icon: 'fa-circle', color: 'gray' };
+    },
+
+    renderOrderTimeline(order) {
+        const stages = ['recebido', 'preparando', 'saiu_entrega', 'entregue'];
+        const currentIndex = Math.min(stages.indexOf(order.status), 3);
+        
+        return stages.map((stage, idx) => {
+            const stageInfo = this.getStatusLabel(stage);
+            const isActive = idx <= currentIndex;
+            const isCurrent = idx === currentIndex;
+            
+            return `
+                <div class="timeline-step ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''}">
+                    <div class="timeline-marker">
+                        <i class="fas ${stageInfo.icon}"></i>
+                    </div>
+                    <div class="timeline-label">${stageInfo.label}</div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    renderOrderCard(order) {
+        const date = new Date(order.createdAt).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const statusInfo = this.getStatusLabel(order.status);
+        const itemsSummary = order.items.map(item => 
+            `${item.quantity}x ${item.name}`
+        ).join(', ');
+
+        return `
+            <div class="order-card status-${order.status}">
+                <div class="order-header">
+                    <div class="order-info">
+                        <h4>Pedido #${order.id.slice(-6)}</h4>
+                        <p class="order-date">${date}</p>
+                    </div>
+                    <div class="order-status-badge">
+                        <i class="fas ${statusInfo.icon}"></i>
+                        <span>${statusInfo.label}</span>
+                    </div>
+                </div>
+
+                <div class="order-timeline">
+                    ${this.renderOrderTimeline(order)}
+                </div>
+
+                <div class="order-details">
+                    <p><strong>Itens:</strong> ${itemsSummary}</p>
+                    <p><strong>Endereço:</strong> ${order.address}</p>
+                    <p><strong>Total:</strong> ${formatMoney(order.total)}</p>
+                    <p class="order-payment"><strong>Pagamento:</strong> ${order.payment}</p>
+                </div>
+
+                <div class="order-actions">
+                    <button type="button" class="order-btn" onclick="OrderStatus.simulateStatusChange('${order.id}')">
+                        <i class="fas fa-sync-alt"></i> Atualizar status
+                    </button>
+                    <a href="https://wa.me/55${order.phone.replace(/\D/g, '')}" target="_blank" class="order-btn whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+            </div>
+        `;
+    },
+
+    simulateStatusChange(orderId) {
+        const order = this.getOrders().find(o => o.id === orderId);
+        if (!order) return;
+
+        const currentIdx = this.STATUS_STAGES.indexOf(order.status);
+        const nextIdx = currentIdx + 1;
+
+        if (nextIdx < this.STATUS_STAGES.length) {
+            const nextStatus = this.STATUS_STAGES[nextIdx];
+            this.updateOrderStatus(orderId, nextStatus);
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+                Auth.renderAccountSection();
+            }
+            this.showNotification(`Pedido atualizado para: ${this.getStatusLabel(nextStatus).label}`);
+        } else {
+            this.showNotification('Pedido já foi entregue!');
+        }
+    },
+
+    showNotification(message) {
+        const notif = document.createElement('div');
+        notif.className = 'order-notification';
+        notif.textContent = message;
+        document.body.appendChild(notif);
+        
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notif.remove(), 300);
+        }, 3000);
+    },
+
+    renderUserOrders(userId) {
+        const orders = this.getUserOrders(userId);
+        const container = document.getElementById('ordersList');
+        
+        if (!container) return;
+
+        if (orders.length === 0) {
+            container.parentElement.querySelector('.orders-empty').hidden = false;
+            container.innerHTML = '';
+            return;
+        }
+
+        container.parentElement.querySelector('.orders-empty').hidden = true;
+        container.innerHTML = orders
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map(order => this.renderOrderCard(order))
+            .join('');
+    }
+};

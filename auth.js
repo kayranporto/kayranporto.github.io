@@ -220,6 +220,11 @@ const Auth = {
         });
         localStorage.setItem(this.getOrdersKey(user.id), JSON.stringify(orders.slice(0, 50)));
 
+        // Salvar também no novo sistema de status de pedidos
+        if (typeof OrderStatus !== 'undefined') {
+            OrderStatus.createOrder(user.id, order);
+        }
+
         this.updateProfile({
             phone: order.phone || user.phone,
             address: order.address || user.address,
@@ -335,41 +340,10 @@ const Auth = {
         document.getElementById('profileAddress').value = user.address || '';
         document.getElementById('profileCep').value = user.cep || '';
 
-        const ordersList = document.getElementById('ordersList');
-        const ordersEmpty = document.getElementById('ordersEmpty');
-        const orders = this.getOrders();
-
-        if (!ordersList) return;
-
-        if (orders.length === 0) {
-            ordersList.innerHTML = '';
-            if (ordersEmpty) ordersEmpty.hidden = false;
-            return;
+        // Renderizar pedidos com status
+        if (typeof OrderStatus !== 'undefined') {
+            OrderStatus.renderUserOrders(user.id);
         }
-
-        if (ordersEmpty) ordersEmpty.hidden = true;
-        ordersList.innerHTML = orders.map(order => {
-            const date = new Date(order.date).toLocaleString('pt-BR', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
-            const itemsPreview = order.items
-                ?.map(i => `${i.quantity}x ${i.name}`)
-                .slice(0, 3)
-                .join(', ') || '';
-            const more = (order.items?.length || 0) > 3 ? '…' : '';
-
-            return `
-                <article class="order-card">
-                    <div class="order-card-header">
-                        <span class="order-date"><i class="fas fa-calendar-alt"></i> ${date}</span>
-                        <span class="order-total">${typeof formatMoney === 'function' ? formatMoney(order.total) : `R$ ${order.total}`}</span>
-                    </div>
-                    <p class="order-items">${itemsPreview}${more}</p>
-                    <p class="order-payment"><i class="fas fa-wallet"></i> ${order.payment || '—'}</p>
-                </article>
-            `;
-        }).join('');
     },
 
     async handleLoginSubmit(e) {
