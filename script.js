@@ -54,6 +54,8 @@ const paymentState = {
     cardType: null
 };
 
+const REVIEW_KEY = 'imperio_reviews';
+
 const CATEGORY_NAMES = {
     hamburguer: 'Hambúrguer',
     pizza: 'Pizza',
@@ -768,6 +770,132 @@ function maskCep(input) {
     input.value = v.length > 5 ? `${v.slice(0, 5)}-${v.slice(5)}` : v;
 }
 
+function getReviews() {
+    try {
+        const raw = localStorage.getItem(REVIEW_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return Array.isArray(list) ? list : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveReview(review) {
+    const reviews = getReviews();
+    reviews.unshift(review);
+    try {
+        localStorage.setItem(REVIEW_KEY, JSON.stringify(reviews.slice(0, 100)));
+    } catch (_) { }
+}
+
+function getReviewAverage() {
+    const reviews = getReviews();
+    if (reviews.length === 0) return 0;
+    return reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length;
+}
+
+function formatReviewDate(iso) {
+    return new Date(iso).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
+
+function selectReviewStars(value) {
+    const buttons = document.querySelectorAll('#starsInput .star-btn');
+    buttons.forEach(btn => {
+        const btnValue = Number(btn.dataset.value);
+        btn.classList.toggle('active', btnValue <= value);
+    });
+    document.getElementById('reviewRating').value = value;
+}
+
+function updateReviewFormState() {
+    const note = document.getElementById('reviewFormNote');
+    const submitButton = document.querySelector('#reviewForm button[type="submit"]');
+    const user = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+    if (!note || !submitButton) return;
+
+    if (user) {
+        note.textContent = `Avaliação será enviada como ${user.name.split(' ')[0]}.`;
+        submitButton.removeAttribute('disabled');
+    } else {
+        note.textContent = 'Faça login para usar seu nome na avaliação, ou envie anônimo mesmo assim.';
+        submitButton.removeAttribute('disabled');
+    }
+}
+
+function renderReviews() {
+    const reviews = getReviews();
+    const averageEl = document.getElementById('reviewAverage');
+    const countEl = document.getElementById('reviewCount');
+    const listEl = document.getElementById('reviewList');
+
+    if (averageEl) {
+        averageEl.textContent = getReviewAverage().toFixed(1).replace('.', ',');
+    }
+    if (countEl) {
+        countEl.textContent = `${reviews.length} ${reviews.length === 1 ? 'avaliação' : 'avaliações'}`;
+    }
+    if (!listEl) return;
+
+    if (reviews.length === 0) {
+        listEl.innerHTML = '<div class="review-empty"><i class="fas fa-comment-dots"></i><p>Seja o primeiro a avaliar nosso serviço!</p></div>';
+        return;
+    }
+
+    listEl.innerHTML = reviews.map(review => `
+        <article class="review-card">
+            <div class="review-card-header">
+                <div>
+                    <h4>${escapeHtml(review.name)}</h4>
+                    <div class="review-card-meta">${formatReviewDate(review.createdAt)}</div>
+                </div>
+                <div class="review-stars">${Array.from({ length: 5 }, (_, i) => `
+                    <i class="fas fa-star" style="color: ${i < review.rating ? '#fbbf24' : '#e5e7eb'}"></i>
+                `).join('')}</div>
+            </div>
+            <p class="review-text">${escapeHtml(review.comment)}</p>
+        </article>
+    `).join('');
+}
+
+function initReviews() {
+    const stars = document.querySelectorAll('#starsInput .star-btn');
+    stars.forEach(btn => btn.addEventListener('click', () => selectReviewStars(Number(btn.dataset.value))));
+
+    document.getElementById('reviewForm')?.addEventListener('submit', handleReviewSubmit);
+    updateReviewFormState();
+    renderReviews();
+}
+
+async function handleReviewSubmit(event) {
+    event.preventDefault();
+    const rating = Number(document.getElementById('reviewRating')?.value || 0);
+    const comment = document.getElementById('reviewComment')?.value.trim() || '';
+    const user = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : null;
+
+    if (rating < 1 || comment.length === 0) {
+        alert('Escolha uma nota e escreva um comentário antes de enviar.');
+        return;
+    }
+
+    saveReview({
+        id: Date.now().toString(),
+        name: user?.name || 'Visitante',
+        rating,
+        comment,
+        createdAt: new Date().toISOString()
+    });
+
+    document.getElementById('reviewForm')?.reset();
+    selectReviewStars(3);
+    updateReviewFormState();
+    renderReviews();
+    alert('Avaliação enviada com sucesso! Obrigado.');
+}
+
 // ——— Menu mobile e navegação ———
 function initMobileMenu() {
     const toggle = document.getElementById('menuToggle');
@@ -790,7 +918,7 @@ function initMobileMenu() {
 }
 
 function initNavHighlight() {
-    const sectionIds = ['inicio', 'promocoes', 'cardapio', 'conta', 'sobre', 'contato'];
+    const sectionIds = ['inicio', 'promocoes', 'cardapio', 'conta', 'sobre', 'avaliacoes', 'contato'];
     const links = document.querySelectorAll('nav a[data-nav]');
 
     function setActive(id) {
@@ -895,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initWhatsAppLinks();
     initPayment();
     if (typeof Auth !== 'undefined') Auth.init();
+    initReviews();
 
     document.getElementById('customerPhone')?.addEventListener('input', e => maskPhone(e.target));
     document.getElementById('customerCep')?.addEventListener('input', e => maskCep(e.target));

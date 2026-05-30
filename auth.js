@@ -177,6 +177,7 @@ const Auth = {
         this.updateHeaderUI();
         this.renderAccountSection();
         this.prefillCheckout();
+        window.updateReviewFormState?.();
     },
 
     updateProfile(data) {
@@ -364,6 +365,7 @@ const Auth = {
         this.updateHeaderUI();
         this.renderAccountSection();
         this.prefillCheckout();
+        window.updateReviewFormState?.();
         document.getElementById('loginForm')?.reset();
     },
 
@@ -388,6 +390,7 @@ const Auth = {
         this.updateHeaderUI();
         this.renderAccountSection();
         this.prefillCheckout();
+        window.updateReviewFormState?.();
         document.getElementById('registerForm')?.reset();
     },
 

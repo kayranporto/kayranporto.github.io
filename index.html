@@ -64,6 +64,7 @@
                 <li><a href="#cardapio" data-nav="cardapio">Cardápio</a></li>
                 <li><a href="#promocoes" data-nav="promocoes">Promoções</a></li>
                 <li><a href="#sobre" data-nav="sobre">Sobre Nós</a></li>
+                <li><a href="#avaliacoes" data-nav="avaliacoes">Avaliações</a></li>
                 <li><a href="#conta" data-nav="conta" id="navConta" class="nav-conta-hidden">Minha conta</a></li>
                 <li><a href="#contato" data-nav="contato">Contato</a></li>
             </ul>
@@ -270,6 +271,52 @@
                         <span>Avaliação dos clientes</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews" id="avaliacoes">
+        <div class="container-inner">
+            <div class="section-title">
+                <div>
+                    <span class="section-label">Avaliações</span>
+                    <h2><i class="fas fa-star"></i> O que nossos clientes dizem</h2>
+                </div>
+            </div>
+
+            <div class="review-summary">
+                <div class="rating-score">
+                    <strong id="reviewAverage">0,0</strong>
+                    <span>/ 5</span>
+                </div>
+                <div class="review-count" id="reviewCount">0 avaliações</div>
+            </div>
+
+            <div class="review-grid">
+                <div class="review-form-card">
+                    <h3>Deixe sua avaliação</h3>
+                    <p class="review-form-note" id="reviewFormNote">Login reduz erros e usa seu nome na avaliação.</p>
+                    <form id="reviewForm" class="review-form">
+                        <div class="form-group rating-group">
+                            <label>Nota</label>
+                            <div class="stars-input" id="starsInput" role="radiogroup" aria-label="Escolha a nota">
+                                <button type="button" class="star-btn active" data-value="1" aria-label="1 estrela"><i class="fas fa-star"></i></button>
+                                <button type="button" class="star-btn active" data-value="2" aria-label="2 estrelas"><i class="fas fa-star"></i></button>
+                                <button type="button" class="star-btn active" data-value="3" aria-label="3 estrelas"><i class="fas fa-star"></i></button>
+                                <button type="button" class="star-btn" data-value="4" aria-label="4 estrelas"><i class="fas fa-star"></i></button>
+                                <button type="button" class="star-btn" data-value="5" aria-label="5 estrelas"><i class="fas fa-star"></i></button>
+                                <input type="hidden" id="reviewRating" value="3">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewComment">Comentário</label>
+                            <textarea id="reviewComment" rows="4" maxlength="300" placeholder="Conte sua experiência com nosso delivery..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary btn-block">Enviar avaliação</button>
+                    </form>
+                </div>
+
+                <div class="review-list" id="reviewList"></div>
             </div>
         </div>
     </section>
