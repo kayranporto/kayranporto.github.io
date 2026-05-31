@@ -335,6 +335,29 @@
                 <p>Adicione itens deliciosos ao seu pedido!</p>
             </div>
         </div>
+        
+        <div class="coupon-section" id="couponSection" hidden>
+            <div class="coupon-input-group">
+                <input type="text" id="couponInput" placeholder="Digite seu cupom..." autocomplete="off" aria-label="Código do cupom">
+                <button type="button" onclick="applyCoupon()" class="coupon-apply-btn" aria-label="Aplicar cupom">
+                    <i class="fas fa-tag"></i> Aplicar
+                </button>
+            </div>
+            <div class="coupon-message" id="couponMessage" hidden></div>
+            <div class="coupon-active" id="couponActive" hidden>
+                <div class="coupon-active-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <p class="coupon-active-code" id="couponActiveCode"></p>
+                        <p class="coupon-active-discount" id="couponActiveDiscount"></p>
+                    </div>
+                </div>
+                <button type="button" onclick="removeCoupon()" class="coupon-remove-btn" aria-label="Remover cupom">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
         <div class="cart-footer">
             <div class="cart-subtotal" id="cartSubtotalRow" hidden>
                 <span>Subtotal:</span>
