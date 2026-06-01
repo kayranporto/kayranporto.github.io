@@ -452,17 +452,47 @@
                 </div>
 
                 <div class="payment-details" id="paymentDetailsPix" hidden>
-                    <div class="pix-box">
-                        <div class="pix-info">
-                            <span class="pix-label">Chave PIX</span>
-                            <code id="pixKeyDisplay">—</code>
-                            <span class="pix-holder" id="pixHolderDisplay"></span>
+                    <div class="pix-container">
+                        <!-- QR Code Section -->
+                        <div class="pix-qr-section">
+                            <div class="pix-qr-box" id="pixQrBox">
+                                <div id="pixQrContainer" style="display: flex; justify-content: center; align-items: center; min-height: 280px;">
+                                    <p class="pix-loading"><i class="fas fa-spinner fa-spin"></i> Gerando QR Code...</p>
+                                </div>
+                                <div class="pix-timer" id="pixTimer" hidden>
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <span id="pixTimerText">Expira em: 10:00</span>
+                                </div>
+                            </div>
+                            <button type="button" class="pix-download-btn" id="downloadPixQr" title="Baixar QR Code">
+                                <i class="fas fa-download"></i> Baixar QR Code
+                            </button>
                         </div>
-                        <button type="button" class="pix-copy-btn" id="copyPixBtn">
-                            <i class="fas fa-copy" aria-hidden="true"></i> Copiar
-                        </button>
+
+                        <!-- PIX Key Section -->
+                        <div class="pix-info-section">
+                            <div class="pix-info">
+                                <span class="pix-label">Chave PIX</span>
+                                <code id="pixKeyDisplay" class="pix-key">—</code>
+                                <span class="pix-holder" id="pixHolderDisplay"></span>
+                            </div>
+                            <button type="button" class="pix-copy-btn" id="copyPixBtn">
+                                <i class="fas fa-copy" aria-hidden="true"></i> Copiar Chave
+                            </button>
+                        </div>
+
+                        <!-- Confirmation Section -->
+                        <div class="pix-confirmation">
+                            <label class="pix-confirmation-label">
+                                <input type="checkbox" id="pixConfirmCheckbox" />
+                                <span>Já realizei o pagamento PIX</span>
+                            </label>
+                            <button type="button" class="pix-confirm-btn" id="pixConfirmBtn" disabled>
+                                <i class="fas fa-check-circle"></i> Confirmar Pagamento
+                            </button>
+                        </div>
                     </div>
-                    <p class="payment-note"><i class="fab fa-whatsapp" aria-hidden="true"></i> Envie o comprovante no WhatsApp após confirmar o pedido</p>
+                    <p class="payment-note"><i class="fab fa-whatsapp" aria-hidden="true"></i> Após confirmar o PIX, seu pedido será processado</p>
                 </div>
             </fieldset>
             <div class="form-group">

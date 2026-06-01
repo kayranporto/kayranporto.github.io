@@ -53,7 +53,8 @@ const paymentState = {
     method: null,
     needsChange: null,
     changeFor: '',
-    cardType: null
+    cardType: null,
+    pixConfirmed: false
 };
 
 const REVIEW_KEY = 'imperio_reviews';
@@ -644,6 +645,8 @@ function selectPaymentMethod(method) {
         document.getElementById('paymentDetailsCard').hidden = false;
     } else if (method === 'pix') {
         document.getElementById('paymentDetailsPix').hidden = false;
+        // Gerar QR Code automaticamente
+        setTimeout(() => generatePixQrCode(), 300);
     }
 }
 
@@ -699,7 +702,11 @@ function getPaymentSummary() {
     }
 
     if (paymentState.method === 'pix') {
-        return `PIX (${CONFIG.payment.pixType}: ${CONFIG.payment.pixKey})`;
+        let text = `PIX (${CONFIG.payment.pixType}: ${CONFIG.payment.pixKey})`;
+        if (paymentState.pixConfirmed) {
+            text += ' ✅ Confirmado';
+        }
+        return text;
     }
 
     return '';
@@ -763,6 +770,7 @@ function resetPaymentForm() {
     paymentState.needsChange = null;
     paymentState.changeFor = '';
     paymentState.cardType = null;
+    paymentState.pixConfirmed = false;
 
     document.querySelectorAll('.payment-method').forEach(btn => {
         btn.classList.remove('selected');
@@ -775,6 +783,19 @@ function resetPaymentForm() {
     const changeInput = document.getElementById('changeFor');
     if (changeInput) changeInput.value = '';
     document.getElementById('changeAmountGroup').hidden = true;
+
+    // Reset PIX
+    const pixCheckbox = document.getElementById('pixConfirmCheckbox');
+    if (pixCheckbox) pixCheckbox.checked = false;
+    const pixConfirmBtn = document.getElementById('pixConfirmBtn');
+    if (pixConfirmBtn) {
+        pixConfirmBtn.disabled = true;
+        pixConfirmBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Pagamento';
+    }
+    const pixTimer = document.getElementById('pixTimer');
+    if (pixTimer) pixTimer.hidden = true;
+    const pixQrContainer = document.getElementById('pixQrContainer');
+    if (pixQrContainer) pixQrContainer.innerHTML = '';
 }
 
 async function copyPixKey() {
@@ -787,11 +808,148 @@ async function copyPixKey() {
             btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Copiado!';
             setTimeout(() => {
                 btn.classList.remove('copied');
-                btn.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copiar';
+                btn.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copiar Chave';
             }, 2000);
         }
     } catch (_) {
         alert(`Chave PIX: ${key}`);
+    }
+}
+
+// ——— PIX Automático ———
+function generatePixQrCode() {
+    const container = document.getElementById('pixQrContainer');
+    if (!container) return;
+
+    // Limpar container anterior
+    container.innerHTML = '';
+
+    try {
+        // Gerar dados PIX com valor do pedido
+        const amount = getCartTotal().toFixed(2).replace('.', '');
+        
+        // Criar código PIX (formato simplificado para demonstração)
+        const pixCode = `00020126580014br.gov.bcb.pix0136${CONFIG.payment.pixKey}5204000052040000530398654061${amount}5802BR5913${CONFIG.payment.pixHolder.slice(0, 25).padEnd(25, ' ')}6009SAO PAULO62410503***63041D3A`;
+
+        // Usar API de QR Code para gerar a imagem
+        // Usando QR Server que é gratuito e confiável
+        const qrImageUrl = encodeURIComponent(pixCode);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${qrImageUrl}&bgcolor=FAFAF9&color=1C1917`;
+
+        // Criar elemento de imagem
+        const img = document.createElement('img');
+        img.src = qrUrl;
+        img.alt = 'QR Code PIX';
+        img.style.borderRadius = '12px';
+        img.style.boxShadow = '0 4px 16px rgba(28, 25, 23, 0.15)';
+        img.style.backgroundColor = 'var(--white)';
+        img.style.padding = '8px';
+        img.style.border = '1px solid var(--border)';
+        
+        // Adicionar tratamento de erro
+        img.onerror = () => {
+            container.innerHTML = '<p style="color: var(--primary); text-align: center;">Erro ao carregar QR Code</p>';
+        };
+
+        container.appendChild(img);
+
+        // Mostrar timer
+        const timerEl = document.getElementById('pixTimer');
+        if (timerEl) timerEl.hidden = false;
+
+        // Iniciar timer
+        startPixTimer();
+
+        return true;
+    } catch (e) {
+        console.error('Erro ao gerar QR Code:', e);
+        container.innerHTML = '<p style="color: var(--primary); text-align: center;">Erro ao gerar QR Code</p>';
+        return false;
+    }
+}
+
+function startPixTimer(minutes = 10) {
+    const timerText = document.getElementById('pixTimerText');
+    if (!timerText) return;
+
+    let timeLeft = minutes * 60; // em segundos
+
+    const updateTimer = () => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerText.textContent = `Expira em: ${mins}:${secs.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('pixTimer').hidden = true;
+            document.getElementById('pixQrContainer').innerHTML = '<p style="color: var(--gray);">QR Code expirou. Selecione PIX novamente.</p>';
+            return;
+        }
+        timeLeft--;
+    };
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+}
+
+function downloadPixQr() {
+    const canvas = document.querySelector('#pixQrContainer canvas');
+    if (!canvas) {
+        alert('Gere o QR Code primeiro');
+        return;
+    }
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `pix-qrcode-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Feedback visual
+    const btn = document.getElementById('downloadPixQr');
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> Baixado!';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-download"></i> Baixar QR Code';
+        }, 2000);
+    }
+}
+
+function confirmPixPayment() {
+    const checkbox = document.getElementById('pixConfirmCheckbox');
+    const btn = document.getElementById('pixConfirmBtn');
+
+    if (checkbox && checkbox.checked) {
+        // Simular confirmação - em produção, verificaria com backend
+        btn.classList.add('loading');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+
+        setTimeout(() => {
+            // Marcar PIX como confirmado
+            paymentState.pixConfirmed = true;
+
+            // Mostrar mensagem de sucesso
+            const msg = document.createElement('div');
+            msg.className = 'success-message show';
+            msg.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h4>✅ Pagamento PIX confirmado!</h4>
+                    <p>Seu pedido será processado em breve.</p>
+                </div>
+            `;
+            document.body.appendChild(msg);
+
+            setTimeout(() => {
+                msg.classList.remove('show');
+                setTimeout(() => msg.remove(), 300);
+            }, 3000);
+
+            btn.classList.remove('loading');
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Pagamento Confirmado';
+        }, 1500);
     }
 }
 
@@ -815,6 +973,13 @@ function initPayment() {
 
     document.getElementById('changeFor')?.addEventListener('input', e => maskMoney(e.target));
     document.getElementById('copyPixBtn')?.addEventListener('click', copyPixKey);
+
+    // PIX Automático
+    document.getElementById('downloadPixQr')?.addEventListener('click', downloadPixQr);
+    document.getElementById('pixConfirmCheckbox')?.addEventListener('change', (e) => {
+        document.getElementById('pixConfirmBtn').disabled = !e.target.checked;
+    });
+    document.getElementById('pixConfirmBtn')?.addEventListener('click', confirmPixPayment);
 }
 
 function closeAll() {
