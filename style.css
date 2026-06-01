@@ -909,6 +909,8 @@ nav a.active {
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    /* Standard property for line clamping */
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
