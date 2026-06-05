@@ -18,17 +18,31 @@
 <body>
     <a href="#cardapio" class="skip-link">Ir para o cardápio</a>
 
+    <!-- Modal de seleção de loja -->
+    <div class="store-selector-modal" id="storeSelectorModal" role="dialog" aria-labelledby="storeSelectorTitle" aria-modal="true">
+        <div class="store-selector-content">
+            <div class="store-selector-header">
+                <h2 id="storeSelectorTitle"><i class="fas fa-map-marker-alt"></i> Escolha sua loja</h2>
+                <p>Selecione uma loja para começar a fazer pedidos</p>
+            </div>
+            <div class="store-selector-grid" id="storeSelectorGrid"></div>
+        </div>
+    </div>
+
     <header id="siteHeader">
         <div class="header-top">
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="logo">
-                <img src="logo.png" alt="Império Delivery" width="60" height="60">
+                <img id="storeLogo" src="logo.png" alt="Império Delivery" width="60" height="60">
                 <div class="logo-text">
-                    <h1>Império Delivery</h1>
-                    <p>O sabor que conquista você!</p>
+                    <h1 id="storeName">Império Delivery</h1>
+                    <p id="storeSubtitle">O sabor que conquista você!</p>
                 </div>
+                <button class="store-change-btn" id="storeChangeBtn" aria-label="Trocar loja">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
             </div>
             <div class="header-actions">
                 <button type="button" class="header-btn" id="loginBtn" aria-label="Entrar na conta">
@@ -47,9 +61,9 @@
                         <button type="button" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
                     </div>
                 </div>
-                <a class="header-btn" href="tel:+5511999999999" aria-label="Ligar para o restaurante">
+                <a class="header-btn" href="tel:+5511999999999" aria-label="Ligar para o restaurante" id="phoneBtn">
                     <i class="fas fa-phone"></i>
-                    <span class="hide-mobile">(11) 99999-9999</span>
+                    <span class="hide-mobile" id="phoneDisplay">(11) 99999-9999</span>
                 </a>
                 <button class="header-btn cart-btn" onclick="toggleCart()" aria-label="Abrir carrinho">
                     <i class="fas fa-shopping-bag"></i>
@@ -79,9 +93,9 @@
         </div>
         <div class="hero-inner">
             <div class="store-status" id="storeStatus" aria-live="polite"></div>
-            <p class="hero-eyebrow">Império Delivery</p>
-            <h2>Delivery rápido e <span class="hero-highlight">saboroso</span></h2>
-            <p class="hero-lead">Peça agora e receba em minutos. Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
+            <p class="hero-eyebrow" id="heroEyebrow">Império Delivery</p>
+            <h2 id="heroTitle">Delivery rápido e <span class="hero-highlight">saboroso</span></h2>
+            <p class="hero-lead" id="heroLead">Peça agora e receba em minutos. Os melhores lanches, pizzas e bebidas da cidade com entrega expressa.</p>
             <div class="hero-actions">
                 <a href="#cardapio" class="hero-cta hero-cta-primary">
                     <i class="fas fa-utensils"></i> Ver cardápio
@@ -248,9 +262,9 @@
         <div class="container-inner">
             <div class="about-grid">
                 <div class="about-text">
-                    <h2><i class="fas fa-heart"></i> Sobre o Império Delivery</h2>
-                    <p>Nascemos da paixão por comida de qualidade e atendimento que trata cada pedido como especial. Há mais de 5 anos levamos os melhores sabores até a sua porta.</p>
-                    <p>Ingredientes frescos, receitas artesanais e uma equipe dedicada para você pedir com confiança — do site direto para o nosso WhatsApp.</p>
+                    <h2 id="aboutTitle"><i class="fas fa-heart"></i> Sobre o Império Delivery</h2>
+                    <p id="aboutDescription">Nascemos da paixão por comida de qualidade e atendimento que trata cada pedido como especial. Há mais de 5 anos levamos os melhores sabores até a sua porta.</p>
+                    <p id="aboutDetails">Ingredientes frescos, receitas artesanais e uma equipe dedicada para você pedir com confiança — do site direto para o nosso WhatsApp.</p>
                     <ul class="about-highlights">
                         <li><i class="fas fa-check-circle"></i> Produção diária</li>
                         <li><i class="fas fa-check-circle"></i> Embalagem segura para entrega</li>
@@ -620,6 +634,8 @@
     </footer>
 
     <script src="auth.js"></script>
+    <script src="stores.js"></script>
+    <script src="multi-delivery.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

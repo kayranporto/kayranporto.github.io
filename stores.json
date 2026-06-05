@@ -1,0 +1,58 @@
+{
+  "stores": [
+    {
+      "id": "imperio",
+      "name": "Império Delivery",
+      "logo": "logos/imperio-logo.png",
+      "whatsapp": "11999999999",
+      "phone": "(11) 9999-9999",
+      "horarios": {
+        "segunda": "11:00 - 23:00",
+        "terca": "11:00 - 23:00",
+        "quarta": "11:00 - 23:00",
+        "quinta": "11:00 - 23:00",
+        "sexta": "11:00 - 23:00",
+        "sabado": "10:00 - 00:00",
+        "domingo": "10:00 - 23:00"
+      },
+      "cor_primaria": "#FF6B35",
+      "cor_secundaria": "#004E89"
+    },
+    {
+      "id": "gourmet",
+      "name": "Gourmet Express",
+      "logo": "logos/gourmet-logo.png",
+      "whatsapp": "11988888888",
+      "phone": "(11) 8888-8888",
+      "horarios": {
+        "segunda": "12:00 - 22:00",
+        "terca": "12:00 - 22:00",
+        "quarta": "12:00 - 22:00",
+        "quinta": "12:00 - 22:00",
+        "sexta": "12:00 - 23:00",
+        "sabado": "11:00 - 23:00",
+        "domingo": "11:00 - 22:00"
+      },
+      "cor_primaria": "#1ABC9C",
+      "cor_secundaria": "#27AE60"
+    },
+    {
+      "id": "rapido",
+      "name": "Rápido & Saudável",
+      "logo": "logos/rapido-logo.png",
+      "whatsapp": "11977777777",
+      "phone": "(11) 7777-7777",
+      "horarios": {
+        "segunda": "06:00 - 23:00",
+        "terca": "06:00 - 23:00",
+        "quarta": "06:00 - 23:00",
+        "quinta": "06:00 - 23:00",
+        "sexta": "06:00 - 23:00",
+        "sabado": "07:00 - 23:00",
+        "domingo": "07:00 - 22:00"
+      },
+      "cor_primaria": "#E74C3C",
+      "cor_secundaria": "#F39C12"
+    }
+  ]
+}
