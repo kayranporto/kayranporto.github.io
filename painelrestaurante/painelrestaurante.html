@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Restaurante</title>
+<link rel="stylesheet" href="painelrestaurante.css">
+</head>
+<body>
+
+<div class="container">
+
+    <aside class="sidebar">
+        <h2>🍔 Restaurante</h2>
+
+     <ul>
+    <li onclick="mostrar('dashboard')">📊 Dashboard</li>
+    <li onclick="mostrar('cardapio')">🍔 Cardápio</li>
+    <li onclick="mostrar('pedidos')">📦 Pedidos</li>
+    <li onclick="mostrar('clientes')">👥 Clientes</li>
+    <li onclick="mostrar('cupons')">🎟 Cupons</li>
+    <li onclick="mostrar('dados')">🏪 Dados</li>
+    <li onclick="mostrar('funcionarios')">👨‍🍳 Funcionários</li>
+</ul>
+    </aside>
+
+    <main class="content">
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="pagina ativa">
+            <h1>Dashboard</h1>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Total de Pedidos</h3>
+                    <p>150</p>
+                </div>
+
+                <div class="card">
+                    <h3>Pendentes</h3>
+                    <p>15</p>
+                </div>
+
+                <div class="card">
+                    <h3>Em Preparo</h3>
+                    <p>8</p>
+                </div>
+
+                <div class="card">
+                    <h3>Entregues</h3>
+                    <p>127</p>
+                </div>
+
+                <div class="card">
+                    <h3>Faturamento Hoje</h3>
+                    <p>R$ 2.350,00</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARDÁPIO -->
+        <section id="cardapio" class="pagina">
+            <h1>Gerenciar Cardápio</h1>
+
+            <form id="produtoForm">
+                <input type="text" placeholder="Nome do Produto" required>
+
+                <select>
+                    <option>Pizza</option>
+                    <option>Hambúrguer</option>
+                    <option>Bebidas</option>
+                    <option>Sobremesas</option>
+                </select>
+
+                <input type="number" placeholder="Preço">
+
+                <input type="file">
+
+                <button type="submit">Adicionar Produto</button>
+            </form>
+
+            <table>
+                <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Ações</th>
+                </tr>
+
+                <tr>
+                    <td>X-Burger</td>
+                    <td>Hambúrguer</td>
+                    <td>
+                        <button>Editar</button>
+                        <button>Excluir</button>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- PEDIDOS -->
+        <section id="pedidos" class="pagina">
+            <h1>Gerenciar Pedidos</h1>
+
+            <table>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Status</th>
+                </tr>
+
+                <tr>
+                    <td>#001</td>
+                    <td>João</td>
+                    <td>
+                        <select>
+                            <option>Novo Pedido</option>
+                            <option>Em Preparo</option>
+                            <option>Saiu para Entrega</option>
+                            <option>Entregue</option>
+                            <option>Cancelado</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="clientes" class="pagina">
+
+    <h1>👥 Clientes</h1>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total de Clientes</h3>
+            <p>350</p>
+        </div>
+
+        <div class="card">
+            <h3>Clientes VIP</h3>
+            <p>45</p>
+        </div>
+
+        <div class="card">
+            <h3>Novos este mês</h3>
+            <p>27</p>
+        </div>
+
+    </div>
+
+    <br>
+
+    <button class="btn-cliente">
+        ➕ Cadastrar Cliente
+    </button>
+
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
+            <th>Ações</th>
+        </tr>
+
+        <tr>
+            <td>João Silva</td>
+            <td>(33) 99999-9999</td>
+            <td>joao@email.com</td>
+            <td>
+                <button>Ver Histórico</button>
+                <button>Editar</button>
+            </td>
+        </tr>
+
+    </table>
+
+</section>
+
+<section id="cupons" class="pagina">
+
+    <h1>🎟 Gerenciar Cupons</h1>
+
+    <form id="cupomForm">
+        <input type="text" id="codigo" placeholder="Código do Cupom" required>
+
+        <input type="number" id="desconto" placeholder="Desconto (%)" required>
+
+        <input type="date" id="validade">
+
+        <button type="submit">
+            Criar Cupom
+        </button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Desconto</th>
+                <th>Validade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody id="listaCupons">
+        </tbody>
+    </table>
+
+</section>
+
+        <!-- DADOS -->
+        <section id="dados" class="pagina">
+            <h1>Dados do Restaurante</h1>
+
+            <form>
+                <input type="text" placeholder="Nome do Restaurante">
+
+                <input type="file">
+
+                <input type="text" placeholder="Endereço">
+
+                <input type="text" placeholder="Horário de Funcionamento">
+
+                <input type="number" placeholder="Taxa de Entrega">
+
+                <input type="text" placeholder="WhatsApp">
+
+                <button>Salvar</button>
+            </form>
+        </section>
+
+        <!-- FUNCIONÁRIOS -->
+        <section id="funcionarios" class="pagina">
+            <h1>Funcionários</h1>
+
+            <form>
+                <input type="text" placeholder="Nome">
+
+                <select>
+                    <option>Administrador</option>
+                    <option>Atendente</option>
+                    <option>Cozinha</option>
+                </select>
+
+                <button>Adicionar</button>
+            </form>
+
+            <table>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                </tr>
+
+                <tr>
+                    <td>Carlos</td>
+                    <td>Administrador</td>
+
+                    
+                </tr>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+<script src="painelrestaurante.js"></script>
+</body>
+</html>

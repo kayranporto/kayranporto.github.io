@@ -1,0 +1,137 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    background:#ff6600;
+    color:white;
+    padding:20px;
+}
+
+.sidebar h2{
+    margin-bottom:30px;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar li{
+    padding:15px;
+    cursor:pointer;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+
+.sidebar li:hover{
+    background:rgba(255,255,255,0.2);
+}
+
+.content{
+    flex:1;
+    padding:30px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card p{
+    font-size:24px;
+    color:#ff6600;
+    margin-top:10px;
+}
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+input,
+select,
+button{
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+button{
+    background:#ff6600;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#e65c00;
+}
+
+table{
+    width:100%;
+    background:white;
+    border-collapse:collapse;
+}
+
+table th,
+table td{
+    border:1px solid #ddd;
+    padding:12px;
+}
+
+.pagina{
+    display:none;
+}
+
+.ativa{
+    display:block;
+}
+
+#cupons form{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+#cupons input{
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+#cupons button{
+    background:#ff6600;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+#cupons button:hover{
+    background:#e65c00;
+}
