@@ -2,6 +2,8 @@
  * Autenticação local (navegador).
  * Ideal para GitHub Pages — para produção com muitos usuários, use um backend.
  */
+import { supabase } from './supabase.js';
+
 const Auth = {
     SESSION_KEY: 'imperio_session',
     USERS_KEY: 'imperio_users',
@@ -59,117 +61,143 @@ const Auth = {
 
     getCurrentUser() {
         const session = this.getSession();
-        if (!session) return null;
-        if (session.role === 'admin') {
-            return {
-                id: 'admin',
-                name: 'Administrador',
-                email: session.email,
-                phone: CONFIG?.phoneDisplay || '',
-                address: '',
-                cep: '',
-                role: 'admin'
-            };
+
+        if (!session) {
+            return null;
         }
-        return this.getUsers().find(u => u.id === session.userId) || null;
+
+        return {
+            id: session.userId,
+            name: session.name || '',
+            email: session.email || '',
+            phone: session.phone || '',
+            role: session.role || 'customer'
+        };
     },
 
     async login(email, password, remember = false) {
-        const normalizedEmail = email.trim().toLowerCase();
-        if (!normalizedEmail || !password) {
-            return { ok: false, message: 'Preencha e-mail e senha.' };
+
+        const emailNormalizado = email.trim().toLowerCase();
+
+        const { data: usuario, error } = await supabase
+            .from('usuarios')
+            .select(`
+            id,
+            nome,
+            email,
+            senha_hash,
+            telefone,
+            tipo_usuario,
+            ativo
+        `)
+            .eq('email', emailNormalizado)
+            .eq('ativo', true)
+            .maybeSingle();
+
+        if (error) {
+            console.error(error);
+
+            return {
+                ok: false,
+                message: 'Erro ao consultar usuário.'
+            };
         }
 
-        const admin = CONFIG?.auth?.admin;
-        if (admin && normalizedEmail === admin.email.toLowerCase()) {
-            const hash = await this.hashPassword(password);
-            const adminHash = await this.hashPassword(admin.password);
-            if (hash === adminHash) {
-                const session = {
-                    email: admin.email,
-                    role: 'admin',
-                    expiresAt: remember ? Date.now() + 30 * 24 * 60 * 60 * 1000 : null
-                };
-                this.setSession(session, remember);
-                return { ok: true };
-            }
-            return { ok: false, message: 'E-mail ou senha incorretos.' };
+        if (!usuario) {
+            return {
+                ok: false,
+                message: 'Usuário não encontrado.'
+            };
         }
 
-        const users = this.getUsers();
-        const user = users.find(u => u.email === normalizedEmail);
-        if (!user) {
-            return { ok: false, message: 'Conta não encontrada. Crie seu cadastro.' };
+        const senhaHash = await this.hashPassword(password);
+
+        console.log('HASH DIGITADO:', senhaHash);
+        console.log('HASH BANCO:', usuario.senha_hash);
+
+        if (!usuario.senha_hash) {
+            return {
+                ok: false,
+                message: 'Usuário sem senha cadastrada.'
+            };
         }
 
-        const hash = await this.hashPassword(password);
-        if (user.passwordHash !== hash) {
-            return { ok: false, message: 'E-mail ou senha incorretos.' };
+        if (senhaHash !== usuario.senha_hash) {
+            return {
+                ok: false,
+                message: 'Senha incorreta.'
+            };
         }
-
-        const session = {
-            userId: user.id,
-            email: user.email,
-            role: 'customer',
-            expiresAt: remember ? Date.now() + 30 * 24 * 60 * 60 * 1000 : null
-        };
-        this.setSession(session, remember);
-        return { ok: true };
-    },
-
-    async register({ name, email, phone, password, confirmPassword }) {
-        const trimmedName = name.trim();
-        const normalizedEmail = email.trim().toLowerCase();
-        const phoneDigits = phone.replace(/\D/g, '');
-
-        if (!trimmedName || trimmedName.length < 2) {
-            return { ok: false, message: 'Informe seu nome completo.' };
-        }
-        if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-            return { ok: false, message: 'Informe um e-mail válido.' };
-        }
-        if (phoneDigits.length < 10) {
-            return { ok: false, message: 'Informe um telefone válido.' };
-        }
-        if (!password || password.length < 6) {
-            return { ok: false, message: 'A senha deve ter no mínimo 6 caracteres.' };
-        }
-        if (password !== confirmPassword) {
-            return { ok: false, message: 'As senhas não coincidem.' };
-        }
-
-        const adminEmail = CONFIG?.auth?.admin?.email?.toLowerCase();
-        if (adminEmail && normalizedEmail === adminEmail) {
-            return { ok: false, message: 'Este e-mail não pode ser usado para cadastro.' };
-        }
-
-        const users = this.getUsers();
-        if (users.some(u => u.email === normalizedEmail)) {
-            return { ok: false, message: 'Este e-mail já está cadastrado. Faça login.' };
-        }
-
-        const user = {
-            id: `u_${Date.now()}`,
-            name: trimmedName,
-            email: normalizedEmail,
-            phone,
-            passwordHash: await this.hashPassword(password),
-            address: '',
-            cep: '',
-            createdAt: new Date().toISOString()
-        };
-
-        users.push(user);
-        this.saveUsers(users);
 
         this.setSession({
-            userId: user.id,
-            email: user.email,
-            role: 'customer',
-            expiresAt: null
-        }, false);
+            userId: usuario.id,
+            name: usuario.nome,
+            email: usuario.email,
+            phone: usuario.telefone,
+            role: usuario.tipo_usuario,
+            expiresAt: remember
+                ? Date.now() + (30 * 24 * 60 * 60 * 1000)
+                : null
+        }, remember);
 
-        return { ok: true };
+        return {
+            ok: true
+        };
+    },
+
+    async register({
+        name,
+        email,
+        phone,
+        password,
+        confirmPassword
+    }) {
+
+        if (password !== confirmPassword) {
+            return {
+                ok: false,
+                message: 'As senhas não coincidem.'
+            };
+        }
+
+        const emailNormalizado = email.trim().toLowerCase();
+
+        const { data: existente } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('email', emailNormalizado)
+            .maybeSingle();
+
+        if (existente) {
+            return {
+                ok: false,
+                message: 'Este e-mail já está cadastrado.'
+            };
+        }
+
+        const senhaHash = await this.hashPassword(password);
+
+        const { error } = await supabase
+            .from('usuarios')
+            .insert({
+                nome: name,
+                email: emailNormalizado,
+                telefone: phone,
+                senha_hash: senhaHash,
+                tipo_usuario: 'cliente',
+                ativo: true
+            });
+
+        if (error) {
+            return {
+                ok: false,
+                message: error.message
+            };
+        }
+
+        return {
+            ok: true
+        };
     },
 
     logout() {
@@ -180,16 +208,22 @@ const Auth = {
         window.updateReviewFormState?.();
     },
 
-    updateProfile(data) {
+    async updateProfile(data) {
+
         const session = this.getSession();
-        if (!session || session.role === 'admin') return;
 
-        const users = this.getUsers();
-        const index = users.findIndex(u => u.id === session.userId);
-        if (index === -1) return;
+        if (!session) {
+            return;
+        }
 
-        users[index] = { ...users[index], ...data };
-        this.saveUsers(users);
+        await supabase
+            .from('usuarios')
+            .update({
+                nome: data.name,
+                telefone: data.phone,
+                atualizado_em: new Date().toISOString()
+            })
+            .eq('id', session.userId);
     },
 
     getOrdersKey(userId) {
@@ -233,21 +267,16 @@ const Auth = {
         });
     },
 
-    prefillCheckout() {
-        const user = this.getCurrentUser();
+    async prefillCheckout() {
+        const user = await this.getCurrentUser();
+
+        if (!user) return;
+
         const nameEl = document.getElementById('customerName');
         const phoneEl = document.getElementById('customerPhone');
-        const addressEl = document.getElementById('customerAddress');
-        const cepEl = document.getElementById('customerCep');
 
-        if (!user || user.role === 'admin') {
-            return;
-        }
-
-        if (nameEl && user.name) nameEl.value = user.name;
-        if (phoneEl && user.phone) phoneEl.value = user.phone;
-        if (addressEl && user.address) addressEl.value = user.address;
-        if (cepEl && user.cep) cepEl.value = user.cep;
+        if (nameEl) nameEl.value = user.name || '';
+        if (phoneEl) phoneEl.value = user.phone || '';
     },
 
     openLoginModal(tab = 'login') {
@@ -295,9 +324,10 @@ const Auth = {
         el.classList.add('show');
     },
 
-    updateHeaderUI() {
+    async updateHeaderUI() {
         const session = this.getSession();
-        const user = this.getCurrentUser();
+        const user = await this.getCurrentUser();
+
         const loginBtn = document.getElementById('loginBtn');
         const userMenu = document.getElementById('userMenu');
         const userNameEl = document.getElementById('userMenuName');
@@ -306,10 +336,12 @@ const Auth = {
         if (session && user) {
             loginBtn?.setAttribute('hidden', '');
             userMenu?.removeAttribute('hidden');
+
             if (userNameEl) {
-                const firstName = user.name.split(' ')[0];
+                const firstName = (user.name || 'Usuário').split(' ')[0];
                 userNameEl.textContent = firstName;
             }
+
             navConta?.classList.remove('nav-conta-hidden');
         } else {
             loginBtn?.removeAttribute('hidden');
@@ -318,10 +350,11 @@ const Auth = {
         }
     },
 
-    renderAccountSection() {
+    async renderAccountSection() {
         const guest = document.getElementById('accountGuest');
         const logged = document.getElementById('accountLogged');
-        const user = this.getCurrentUser();
+
+        const user = await this.getCurrentUser();
 
         if (!guest || !logged) return;
 
@@ -334,17 +367,11 @@ const Auth = {
         guest.hidden = true;
         logged.hidden = false;
 
-        document.getElementById('accountName').textContent = user.name;
-        document.getElementById('accountEmail').textContent = user.email;
-        document.getElementById('profileName').value = user.name;
-        document.getElementById('profilePhone').value = user.phone || '';
-        document.getElementById('profileAddress').value = user.address || '';
-        document.getElementById('profileCep').value = user.cep || '';
+        document.getElementById('accountName').textContent = user.name || '';
+        document.getElementById('accountEmail').textContent = user.email || '';
 
-        // Renderizar pedidos com status
-        if (typeof OrderStatus !== 'undefined') {
-            OrderStatus.renderUserOrders(user.id);
-        }
+        document.getElementById('profileName').value = user.name || '';
+        document.getElementById('profilePhone').value = user.phone || '';
     },
 
     async handleLoginSubmit(e) {
@@ -458,6 +485,6 @@ const Auth = {
         this.renderAccountSection();
         this.prefillCheckout();
     }
-};
+}
 
 window.Auth = Auth;
